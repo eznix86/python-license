@@ -1,6 +1,6 @@
 [project]
 name = "python-license"
-version = "1.0.0"
+version = "1.0.1"
 description = "Automatically adds or updates SPDX license and copyright headers in source files."
 readme = "README.md"
 requires-python = ">=3.11"
