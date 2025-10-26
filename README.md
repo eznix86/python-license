@@ -102,7 +102,7 @@ Add to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/eznix86/python-license
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: license-headers
         args: ['--check', 'Apache-2.0', 'Your Name']
@@ -112,7 +112,7 @@ For automatic fixing on commit:
 ```yaml
 repos:
   - repo: https://github.com/eznix86/python-license
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: license-headers
         args: ['--fix', 'Apache-2.0', 'Your Name']
