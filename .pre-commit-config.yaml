@@ -8,8 +8,16 @@ repos:
     hooks:
       - id: spdx-header-check
         name: Check SPDX Headers
-        entry: python3 license.py Apache-2.0 "Bruno Bernard" --fix
+        entry: uv run license --fix Apache-2.0 "Bruno Bernard"
         language: system
-        files: (\.(go|ts|tsx|py|js|jsx|html)|Dockerfile)$
+        files: (\.(py))$
+        pass_filenames: true
+        stages: [pre-commit]
+
+      - id: ruff
+        name: Run Ruff
+        entry: uv run ruff check --fix
+        language: system
+        files: (\.(py))$
         pass_filenames: true
         stages: [pre-commit]

@@ -8,7 +8,7 @@ Designed for use in pre-commit hooks.
 ## Installation
 
 ```sh
-pip install python-license
+pipx install python-license
 ```
 
 ## Usage
@@ -22,6 +22,10 @@ license GPL-2.0-or-later "John Doe" --check
 license MIT "Jane Smith" --fix --dir src/
 license Apache-2.0 "ACME Corp" --ignore-file .licenseignore --fix
 ```
+
+Check [.pre-commit-config.yaml](./.pre-commit-config.yaml) as an example.
+
+Note. `.licenseignore` is a file that can be used to ignore specific files or directories from being processed. Example in [.licenseignore](./.licenseignore)
 
 ## License
 
