@@ -1,0 +1,9 @@
+- id: license-headers
+  name: Check/Fix License Headers
+  description: Add or update SPDX license headers in source files
+  entry: license
+  language: python
+  types: [text]
+  exclude: ^(\.git/|\.licenseignore|LICENSE|NOTICE)
+  pass_filenames: true
+  require_serial: false
