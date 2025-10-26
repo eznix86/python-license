@@ -21,3 +21,8 @@ repos:
         files: (\.(py))$
         pass_filenames: true
         stages: [pre-commit]
+  - repo: https://github.com/eznix86/python-license
+    rev: v1.0.1
+    hooks:
+      - id: license-headers
+        args: ['--fix', 'Apache-2.0', 'Bruno Bernard']
