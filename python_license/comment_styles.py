@@ -12,6 +12,7 @@ class CommentStyle:
     line_prefix: Optional[str] = None
     block_start: Optional[str] = None
     block_end: Optional[str] = None
+    block_line_prefix: Optional[str] = None
 
     def format_single_line(self, text: str) -> str:
         if self.line_prefix:
@@ -20,7 +21,16 @@ class CommentStyle:
 
     def format_block_header(self, lines: List[str]) -> List[str]:
         if self.block_start and self.block_end:
-            formatted = [self.format_single_line(line) for line in lines]
+            if self.block_line_prefix is not None:
+                # Use custom prefix for lines inside block (e.g., " * " for CSS)
+                if self.block_line_prefix:
+                    formatted = [f"{self.block_line_prefix}{line}" for line in lines]
+                else:
+                    # Empty string means no prefix (just the line content)
+                    formatted = [line if line else "" for line in lines]
+            else:
+                # Legacy: use format_single_line for each line
+                formatted = [self.format_single_line(line) for line in lines]
             return [self.block_start] + formatted + [self.block_end]
         return [self.format_single_line(line) for line in lines]
 
@@ -31,8 +41,8 @@ COMMENT_STYLE_GROUPS = {
     "slash": CommentStyle(line_prefix="//"),
     "dash": CommentStyle(line_prefix="--"),
     "quote": CommentStyle(line_prefix='"'),
-    "css_block": CommentStyle(block_start="/*", block_end="*/"),
-    "html_block": CommentStyle(block_start="<!--", block_end="-->"),
+    "css_block": CommentStyle(block_start="/*", block_end="*/", block_line_prefix=" * "),
+    "html_block": CommentStyle(block_start="<!--", block_end="-->", block_line_prefix=""),
 }
 
 EXTENSION_STYLES = {
@@ -88,7 +98,7 @@ EXTENSION_STYLES = {
     **{ext: COMMENT_STYLE_GROUPS["dash"] for ext in (".sql", ".lua", ".hs", ".elm")},
     ".vim": COMMENT_STYLE_GROUPS["quote"],
     ".css": COMMENT_STYLE_GROUPS["css_block"],
-    **{ext: COMMENT_STYLE_GROUPS["html_block"] for ext in (".html", ".xml", ".svg")},
+    **{ext: COMMENT_STYLE_GROUPS["html_block"] for ext in (".html", ".xml", ".svg", ".vue")},
 }
 
 SPECIAL_FILES = {

@@ -203,3 +203,49 @@ class TestSpecialFiles:
         """Test that CMakeLists.txt uses hash comments."""
         assert "CMakeLists.txt" in SPECIAL_FILES
         assert SPECIAL_FILES["CMakeLists.txt"].line_prefix == "#"
+
+
+class TestBlockCommentFormatting:
+    """Tests for block comment formatting (CSS, HTML, Vue)."""
+
+    def test_css_block_formatting(self):
+        """Test that CSS uses proper block comment formatting with asterisk prefix."""
+        style = COMMENT_STYLE_GROUPS["css_block"]
+        lines = ["SPDX-License-Identifier: MIT", "Copyright (C) 2025  Test"]
+        result = style.format_block_header(lines)
+
+        assert result[0] == "/*"
+        assert result[1] == " * SPDX-License-Identifier: MIT"
+        assert result[2] == " * Copyright (C) 2025  Test"
+        assert result[3] == "*/"
+        # Ensure no hash symbols
+        assert all("#" not in line for line in result)
+
+    def test_html_block_formatting(self):
+        """Test that HTML uses proper block comment formatting with no prefix."""
+        style = COMMENT_STYLE_GROUPS["html_block"]
+        lines = ["SPDX-License-Identifier: MIT", "Copyright (C) 2025  Test"]
+        result = style.format_block_header(lines)
+
+        assert result[0] == "<!--"
+        assert result[1] == "SPDX-License-Identifier: MIT"
+        assert result[2] == "Copyright (C) 2025  Test"
+        assert result[3] == "-->"
+        # Ensure no hash symbols
+        assert all("#" not in line for line in result)
+
+    def test_css_block_with_blank_lines(self):
+        """Test that CSS handles blank lines correctly in notice blocks."""
+        style = COMMENT_STYLE_GROUPS["css_block"]
+        lines = ["SPDX-License-Identifier: MIT", "", "This is a notice."]
+        result = style.format_block_header(lines)
+
+        assert result[0] == "/*"
+        assert result[1] == " * SPDX-License-Identifier: MIT"
+        assert result[2] == " * "
+        assert result[3] == " * This is a notice."
+        assert result[4] == "*/"
+
+    def test_vue_uses_html_block(self):
+        """Test that Vue files use HTML block comment style."""
+        assert EXTENSION_STYLES[".vue"] == COMMENT_STYLE_GROUPS["html_block"]
