@@ -51,6 +51,11 @@ def main():
         help="Path to ignore file (.licenseignore or .gitignore). By default uses .licenseignore or .gitignore",
     )
     parser.add_argument(
+        "--notice-template",
+        type=Path,
+        help="Path to notice template file to append after copyright",
+    )
+    parser.add_argument(
         "files",
         nargs="*",
         type=Path,
@@ -72,7 +77,7 @@ def main():
         ignore_file = Path(".gitignore")
 
     ignore_rules = load_ignore_file(ignore_file)
-    manager = SPDXHeader(args.license, args.author, args.year, ignore_rules)
+    manager = SPDXHeader(args.license, args.author, args.year, ignore_rules, args.notice_template)
 
     files_iter = (
         args.files

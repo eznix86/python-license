@@ -273,3 +273,112 @@ class TestCLIExitCodes:
                     main()
                 except SystemExit:
                     pytest.fail("Should not exit with error on successful fix")
+
+
+class TestCLINoticeTemplate:
+    """Tests for notice template functionality."""
+
+    def test_notice_template_basic(self):
+        """Test that notice template is added to headers."""
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            test_file = tmp_path / "test.py"
+            test_file.write_text("def hello():\n    pass\n")
+
+            template_file = tmp_path / "NOTICE.template"
+            template_file.write_text(
+                "This file is part of Test Project.\n"
+                "See the NOTICE and LICENSE files for details."
+            )
+
+            with patch("sys.argv", [
+                "license", "MIT", "Test Author", "--fix", "--dir", tmpdir,
+                "--notice-template", str(template_file)
+            ]):
+                try:
+                    main()
+                except SystemExit:
+                    pass
+
+            content = test_file.read_text()
+            assert "SPDX-License-Identifier: MIT" in content
+            assert "Copyright (C)" in content
+            assert "This file is part of Test Project." in content
+            assert "See the NOTICE and LICENSE files for details." in content
+
+    def test_notice_template_with_different_comment_styles(self):
+        """Test notice template works with different comment styles."""
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            template_file = tmp_path / "NOTICE.template"
+            template_file.write_text("This is a notice block.")
+
+            # Test with JavaScript (// comments)
+            js_file = tmp_path / "test.js"
+            js_file.write_text("console.log('hello');\n")
+
+            with patch("sys.argv", [
+                "license",
+                "--fix",
+                "--notice-template", str(template_file),
+                "MIT", "Test",
+                str(js_file)
+            ]):
+                try:
+                    main()
+                except SystemExit:
+                    pass
+
+            js_content = js_file.read_text()
+            assert "// SPDX-License-Identifier: MIT" in js_content
+            assert "// This is a notice block." in js_content
+
+    def test_notice_template_missing_file(self):
+        """Test handling of missing template file."""
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            test_file = tmp_path / "test.py"
+            test_file.write_text("pass\n")
+
+            missing_template = tmp_path / "nonexistent.template"
+
+            with patch("sys.argv", [
+                "license", "MIT", "Test", "--fix", "--dir", tmpdir,
+                "--notice-template", str(missing_template)
+            ]):
+                try:
+                    main()
+                except SystemExit:
+                    pass
+
+            content = test_file.read_text()
+            assert "SPDX-License-Identifier: MIT" in content
+            assert "Copyright (C)" in content
+
+    def test_notice_template_blank_line_separator(self):
+        """Test that blank line separates copyright from notice."""
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            test_file = tmp_path / "test.py"
+            test_file.write_text("pass\n")
+
+            template_file = tmp_path / "NOTICE.template"
+            template_file.write_text("Notice text here.")
+
+            with patch("sys.argv", [
+                "license", "MIT", "Test", "--fix", "--dir", tmpdir,
+                "--notice-template", str(template_file)
+            ]):
+                try:
+                    main()
+                except SystemExit:
+                    pass
+
+            lines = test_file.read_text().splitlines()
+            spdx_idx = next(i for i, line in enumerate(lines) if "SPDX-License-Identifier" in line)
+            copyright_idx = next(i for i, line in enumerate(lines) if "Copyright" in line)
+            notice_idx = next(i for i, line in enumerate(lines) if "Notice text" in line)
+
+            # Check there's a blank comment line between copyright and notice
+            assert copyright_idx < notice_idx
+            assert lines[copyright_idx + 1].strip() in ["#", "//"]

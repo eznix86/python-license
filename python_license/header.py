@@ -23,11 +23,21 @@ class SPDXHeader:
         author: str,
         year: Optional[str] = None,
         ignore_rules: Optional[List[IgnoreRule]] = None,
+        notice_template: Optional[Path] = None,
     ):
         self.license_id = license_id
         self.author = author
         self.year = year or str(datetime.now().year)
         self.ignore_rules = ignore_rules or []
+        self.notice_lines = []
+
+        if notice_template and notice_template.exists():
+            try:
+                content = notice_template.read_text(encoding="utf-8").strip()
+                self.notice_lines = [line for line in content.splitlines() if line.strip()]
+            except Exception:
+                pass
+
         self.spdx_pattern = re.compile(
             r"SPDX-License-Identifier:\s*(.+?)(?:\s*(?:-->|\*/|$))"
         )
@@ -86,6 +96,11 @@ class SPDXHeader:
             f"SPDX-License-Identifier: {self.license_id}",
             f"Copyright (C) {self.year}  {self.author}",
         ]
+
+        if self.notice_lines:
+            lines.append("")
+            lines.extend(self.notice_lines)
+
         return style.format_block_header(lines)
 
     def update_copyright_year(self, line: str, style: CommentStyle) -> str:
