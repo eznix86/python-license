@@ -34,7 +34,7 @@ class SPDXHeader:
         if notice_template and notice_template.exists():
             try:
                 content = notice_template.read_text(encoding="utf-8").strip()
-                self.notice_lines = [line for line in content.splitlines() if line.strip()]
+                self.notice_lines = content.splitlines()
             except Exception:
                 pass
 

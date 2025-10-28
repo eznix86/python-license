@@ -382,3 +382,40 @@ class TestCLINoticeTemplate:
             # Check there's a blank comment line between copyright and notice
             assert copyright_idx < notice_idx
             assert lines[copyright_idx + 1].strip() in ["#", "//"]
+
+    def test_notice_template_preserves_blank_lines(self):
+        """Test that blank lines in template are preserved."""
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            test_file = tmp_path / "test.py"
+            test_file.write_text("pass\n")
+
+            template_file = tmp_path / "NOTICE.template"
+            template_file.write_text(
+                "First paragraph.\n"
+                "\n"
+                "Second paragraph after blank line.\n"
+                "\n"
+                "Third paragraph."
+            )
+
+            with patch("sys.argv", [
+                "license", "MIT", "Test", "--fix", "--dir", tmpdir,
+                "--notice-template", str(template_file)
+            ]):
+                try:
+                    main()
+                except SystemExit:
+                    pass
+
+            content = test_file.read_text()
+            # Check that all paragraphs are present
+            assert "First paragraph." in content
+            assert "Second paragraph after blank line." in content
+            assert "Third paragraph." in content
+
+            # Check that blank lines are preserved (appears as "# " in Python files)
+            lines = content.splitlines()
+            blank_comment_lines = [i for i, line in enumerate(lines) if line.strip() == "#"]
+            # Should have at least 3 blank comment lines: one after copyright, and two between paragraphs
+            assert len(blank_comment_lines) >= 3
