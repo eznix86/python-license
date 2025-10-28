@@ -87,28 +87,28 @@ pip install python-license
 
 Basic syntax:
 ```sh
-license <license-id> "<author>" [options]
+license [options] <license-id> "<author>"
 ```
 
 Examples:
 ```sh
 # Check files without modifying (dry-run)
-license Apache-2.0 "John Doe" --check
+license --check Apache-2.0 "John Doe"
 
 # Add/update headers in specific directory
-license MIT "Jane Smith" --fix --dir src/
+license --fix MIT "Jane Smith" --dir src/
 
 # Use custom ignore file
-license GPL-3.0 "ACME Corp" --ignore-file .licenseignore --fix
+license --ignore-file .licenseignore --fix GPL-3.0 "ACME Corp"
 
 # Process specific files only
-license Apache-2.0 "Your Name" --fix file1.py file2.js
+license --fix Apache-2.0 "Your Name" file1.py file2.js
 
 # Set custom copyright year
-license MIT "Your Company" --fix --year 2024
+license --fix --year 2024 MIT "Your Company"
 
 # Add extended notice (e.g., for AGPL, GPL licenses)
-license AGPL-3.0-or-later "Your Name" --fix --notice-template NOTICE.template
+license --fix --notice-template NOTICE.template AGPL-3.0-or-later "Your Name"
 ```
 
 ### Pre-commit Hook (Recommended)
@@ -168,7 +168,7 @@ See the LICENSE file for more details.
 
 Then use it with:
 ```sh
-license AGPL-3.0-or-later "Your Name" --fix --notice-template NOTICE.template
+license --fix --notice-template NOTICE.template AGPL-3.0-or-later "Your Name"
 ```
 
 **Result:**
@@ -231,7 +231,7 @@ Yes! Use `--check` mode to fail the build if any files are missing headers:
 ```yaml
 # GitHub Actions example
 - name: Check license headers
-  run: license Apache-2.0 "Your Name" --check
+  run: license --check Apache-2.0 "Your Name"
 ```
 
 This returns exit code 1 if any files need updating.
