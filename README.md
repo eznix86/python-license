@@ -28,17 +28,30 @@ def your_code():
 function yourCode() {}
 ```
 
-**For CSS/HTML:**
+**For CSS:**
 ```css
-/* SPDX-License-Identifier: Apache-2.0 */
-/* Copyright (C) 2025  Your Name */
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (C) 2025  Your Name
+*/
 
 body { margin: 0; }
 ```
 
+**For HTML/Vue:**
+```html
+<!--
+SPDX-License-Identifier: Apache-2.0
+Copyright (C) 2025  Your Name
+-->
+
+<!DOCTYPE html>
+```
+
 ### Key Features
 
-- Supports 50+ file types including Python, JavaScript, TypeScript, Go, Rust, Java, C/C++, Swift, Kotlin, Ruby, Shell, SQL, and more
+- Supports 50+ file types including Python, JavaScript, TypeScript, Go, Rust, Java, C/C++, Swift, Kotlin, Ruby, Shell, SQL, Vue, and more
+- Custom notice templates for extended license information (e.g., AGPL, GPL notices)
 - Automatically updates copyright year ranges (e.g., `2023` becomes `2023-2025` when modified)
 - Check mode for CI/CD integration to ensure all files have headers
 - Respects `.licenseignore` and `.gitignore` files automatically
@@ -53,7 +66,7 @@ body { margin: 0; }
 
 **Dash comments (--):** SQL, Lua, Haskell, Elm
 
-**Block comments:** CSS (`/* */`), HTML/XML/SVG (`<!-- -->`)
+**Block comments:** CSS (`/* */`), HTML/XML/SVG/Vue (`<!-- -->`)
 
 **Special files:** Dockerfile, Makefile, Jenkinsfile, Vagrantfile, Rakefile, Gemfile, Podfile, Fastfile, CMakeLists.txt, and more
 
@@ -93,6 +106,9 @@ license Apache-2.0 "Your Name" --fix file1.py file2.js
 
 # Set custom copyright year
 license MIT "Your Company" --fix --year 2024
+
+# Add extended notice (e.g., for AGPL, GPL licenses)
+license AGPL-3.0-or-later "Your Name" --fix --notice-template NOTICE.template
 ```
 
 ### Pre-commit Hook (Recommended)
@@ -131,7 +147,44 @@ See [.pre-commit-config.yaml](./.pre-commit-config.yaml) for a complete example.
 | `--no-recursive` | Don't process subdirectories |
 | `--verbose`, `-v` | Show all processed files |
 | `--ignore-file FILE` | Path to ignore file (default: .licenseignore or .gitignore) |
+| `--notice-template FILE` | Path to notice template file to append after copyright |
 | `files` | Specific files to process (overrides --dir) |
+
+### Notice Templates
+
+For licenses that require extended notices (like AGPL, GPL), create a template file:
+
+**NOTICE.template:**
+```
+This file is part of Your Project.
+
+Your Project is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+See the LICENSE file for more details.
+```
+
+Then use it with:
+```sh
+license AGPL-3.0-or-later "Your Name" --fix --notice-template NOTICE.template
+```
+
+**Result:**
+```javascript
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2025  Your Name
+//
+// This file is part of Your Project.
+//
+// Your Project is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// See the LICENSE file for more details.
+```
 
 ### Ignore Files
 

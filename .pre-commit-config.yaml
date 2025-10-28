@@ -13,7 +13,6 @@ repos:
         files: (\.(py))$
         pass_filenames: true
         stages: [pre-commit]
-
       - id: ruff
         name: Run Ruff
         entry: uv run ruff check --fix
@@ -22,7 +21,7 @@ repos:
         pass_filenames: true
         stages: [pre-commit]
   - repo: https://github.com/eznix86/python-license
-    rev: v1.0.1
+    rev: v1.2.2
     hooks:
       - id: license-headers
         args: ['--fix', 'Apache-2.0', 'Bruno Bernard']
